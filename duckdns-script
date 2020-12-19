@@ -111,21 +111,21 @@ function duckdns_update_ipv4() {
     local url="${base_url}&ip=$1"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -o - "${url}"
+    curl -s -S "${url}"
 }
 
 function duckdns_update_ipv6() {
     local url="${base_url}&ipv6=$1"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -o - "${url}"
+    curl -s -S "${url}"
 }
 
 function duckdns_update_both() {
     local url="${base_url}&ip=$1&ipv6=$2"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -o - "${url}"
+    curl -s -S "${url}"
 }
 
 function duckdns_clear() {
@@ -144,6 +144,8 @@ if [ "${ipv6_mode}" = "auto" ]; then
     if [ $? != 0 ]; then
         echo 1>&2 "Failed detecting IPv6."
         ipv6_mode=""
+    else
+        echo 1>&2 "IPv6 detected."
     fi
 fi
 
