@@ -1,6 +1,7 @@
 # duckdns-script
 
-Updates DuckDNS records. Auto detects IPv6 with seeip.org.
+Updates DuckDNS records. Auto detects IPv6
+with [seeip.org](https://seeip.org/).
 
 ---
 
