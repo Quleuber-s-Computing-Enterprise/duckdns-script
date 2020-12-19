@@ -1,0 +1,161 @@
+#!/bin/bash
+
+# TODO update periodically
+
+function usage_text() {
+    len="${#0}"
+    s="$(printf "%${len}s" "")"
+    echo "Usage:"
+    echo "   $0 --help"
+    echo "   $0 --clear [--domains]"
+    echo "   $0 [--domains]"
+    echo "   $s [--ipv4 IPV4] [--ipv6 IPV6]"
+    echo "   $s [--ipv6-auto] [--ipv6-auto]"
+}
+
+function help_text() {
+    echo "Help:"
+    echo "    -h,--help         Shows this text."
+    echo "    -d,--domains      Comma separated list of the subnames you"
+    echo "                      want to update."
+    echo "    -c,--clear        Clear all records. Ignores IP options below."
+    echo "    -4,--ipv4 IPV4    Sets IPv4 to given IP."
+    echo "    -6,--ipv6 IPV6    Sets IPv6 to given IP."
+    echo "    -4a,--ipv6-auto   Sets IPv4 to automatically detected IP."
+    echo "    -6a,--ipv6-auto   Sets IPv6 to automatically detected IP."
+}
+
+function show_usage() {
+    usage_text 1>&2
+}
+
+function show_usage_help() {
+    usage_text 1>&2
+    echo 1>&2
+    help_text 1>&2
+}
+
+TOKEN=
+DOMAINS=
+
+# shellcheck source=/dev/null
+if [ -f "${HOME}/.duckdns.env" ]; then
+    source "${HOME}/.duckdns.env"
+fi
+
+do_clear=""
+ipv4_mode=""
+ipv6_mode=""
+ipv4=""
+ipv6=""
+
+pos_args=()
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    shift
+
+    case "$key" in
+
+    -h | --help)
+        show_usage_help
+        exit
+        ;;
+
+    -d | --domains)
+        DOMAINS="$1"
+        shift
+        ;;
+
+    -c | --clear)
+        do_clear="yes"
+        ;;
+
+    -4 | --ipv4)
+        ipv4_mode="manual"
+        ipv4="$1"
+        shift
+        ;;
+    -6 | --ipv6)
+        ipv6_mode="manual"
+        ipv6="$1"
+        shift
+        ;;
+
+    -4a | --ipv4-auto)
+        ipv4_mode="auto"
+        ;;
+    -6a | --ipv6-auto)
+        ipv6_mode="auto"
+        ;;
+
+    *)
+        pos_args+=("$1")
+        shift
+        ;;
+
+    esac
+done
+
+function whats_my_ipv4() {
+    curl -s -S "https://ip4.seeip.org"
+}
+function whats_my_ipv6() {
+    # curl -s -S "https://ip6.seeip.org"
+    curl -s -S "https://ip6.seeip.org"
+}
+
+base_query="verbose=true&token=${TOKEN}&domains=${DOMAINS}"
+base_url="https://www.duckdns.org/update?${base_query}"
+
+function duckdns_update_ipv4() {
+    local url="${base_url}&ip=$1"
+    echo 1>&2 "$url"
+    # echo "url=${url}" | curl -k -o - -K -
+    curl -o - "${url}"
+}
+
+function duckdns_update_ipv6() {
+    local url="${base_url}&ipv6=$1"
+    echo 1>&2 "$url"
+    # echo "url=${url}" | curl -k -o - -K -
+    curl -o - "${url}"
+}
+
+function duckdns_update_both() {
+    local url="${base_url}&ip=$1&ipv6=$2"
+    echo 1>&2 "$url"
+    # echo "url=${url}" | curl -k -o - -K -
+    curl -o - "${url}"
+}
+
+function duckdns_clear() {
+    local url="${base_url}&clear=true"
+    echo 1>&2 "$url"
+    echo "url=${url}" | curl -k -o - -K -
+}
+
+if [ "${ipv4_mode}" = "auto" ]; then
+    ipv4=""
+fi
+if [ "${ipv6_mode}" = "auto" ]; then
+    echo 1>&2 "Detecting IPv6..."
+    ipv6="$(whats_my_ipv6)"
+    # shellcheck disable=SC2181
+    if [ $? != 0 ]; then
+        echo 1>&2 "Failed detecting IPv6."
+        ipv6_mode=""
+    fi
+fi
+
+if [ -n "${do_clear}" ]; then
+    duckdns_clear
+elif [ -n "${ipv4_mode}" ] && [ -n "${ipv6_mode}" ]; then
+    duckdns_update_both "${ipv4}" "${ipv6}"
+elif [ -n "${ipv4_mode}" ]; then
+    duckdns_update_ipv4 "${ipv4}"
+elif [ -n "${ipv6_mode}" ]; then
+    duckdns_update_ipv6 "${ipv6}"
+else
+    echo 1>&2 "Nothing to do."
+    exit 1
+fi
