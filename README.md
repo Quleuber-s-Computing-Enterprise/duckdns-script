@@ -2,7 +2,7 @@
 
 Updates DuckDNS records. Auto detects IPv6 with seeip.org.
 
---k
+---
 
 ```
 Usage:
