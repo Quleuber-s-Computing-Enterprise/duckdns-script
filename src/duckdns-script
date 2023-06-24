@@ -12,7 +12,7 @@ function usage_text() {
     echo "   $0 --clear [--domains]"
     echo "   $0 [--domains]"
     echo "   $s [--ipv4 IPV4] [--ipv6 IPV6]"
-    echo "   $s [--ipv6-auto] [--ipv6-auto]"
+    echo "   $s [--ipv4-auto] [--ipv6-auto]"
 }
 
 function help_text() {
