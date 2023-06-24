@@ -111,21 +111,21 @@ base_url="https://www.duckdns.org/update?${base_query}"
 
 function duckdns_update_ipv4() {
     local url="${base_url}&ip=$1"
-    echo 1>&2 "$url"
+    # echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
     $curl_cmd -s -S "${url}"
 }
 
 function duckdns_update_ipv6() {
     local url="${base_url}&ipv6=$1"
-    echo 1>&2 "$url"
+    # echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
     $curl_cmd -s -S "${url}"
 }
 
 function duckdns_update_both() {
     local url="${base_url}&ip=$1&ipv6=$2"
-    echo 1>&2 "$url"
+    # echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
     $curl_cmd -s -S "${url}"
 }
@@ -154,10 +154,13 @@ fi
 if [ -n "${do_clear}" ]; then
     duckdns_clear
 elif [ -n "${ipv4_mode}" ] && [ -n "${ipv6_mode}" ]; then
+    echo 1>&2 "Updating both IPv4 and IPv6..."
     duckdns_update_both "${ipv4}" "${ipv6}"
 elif [ -n "${ipv4_mode}" ]; then
+    echo 1>&2 "Updating IPv4..."
     duckdns_update_ipv4 "${ipv4}"
 elif [ -n "${ipv6_mode}" ]; then
+    echo 1>&2 "Updating IPv6..."
     duckdns_update_ipv6 "${ipv6}"
 else
     echo 1>&2 "Nothing to do."
