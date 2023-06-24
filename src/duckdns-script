@@ -2,6 +2,8 @@
 
 # TODO update periodically
 
+curl_cmd=curl
+
 function usage_text() {
     len="${#0}"
     s="$(printf "%${len}s" "")"
@@ -97,11 +99,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 function whats_my_ipv4() {
-    curl -s -S "https://ip4.seeip.org"
+    $curl_cmd -s -S "https://ip4.seeip.org"
 }
 function whats_my_ipv6() {
-    # curl -s -S "https://ip6.seeip.org"
-    curl -s -S "https://ip6.seeip.org"
+    # $curl_cmd -s -S "https://ip6.seeip.org"
+    $curl_cmd -s -S "https://ip6.seeip.org"
 }
 
 base_query="verbose=true&token=${TOKEN}&domains=${DOMAINS}"
@@ -111,21 +113,21 @@ function duckdns_update_ipv4() {
     local url="${base_url}&ip=$1"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -s -S "${url}"
+    $curl_cmd -s -S "${url}"
 }
 
 function duckdns_update_ipv6() {
     local url="${base_url}&ipv6=$1"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -s -S "${url}"
+    $curl_cmd -s -S "${url}"
 }
 
 function duckdns_update_both() {
     local url="${base_url}&ip=$1&ipv6=$2"
     echo 1>&2 "$url"
     # echo "url=${url}" | curl -k -o - -K -
-    curl -s -S "${url}"
+    $curl_cmd -s -S "${url}"
 }
 
 function duckdns_clear() {
