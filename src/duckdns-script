@@ -99,11 +99,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 function whats_my_ipv4() {
-    $curl_cmd -s -S "https://ip4.seeip.org"
+    $curl_cmd -s -S "https://api.ipify.org/"
 }
 function whats_my_ipv6() {
     # $curl_cmd -s -S "https://ip6.seeip.org"
-    $curl_cmd -s -S "https://ip6.seeip.org"
+    $curl_cmd -s -S "https://api6.ipify.org/"
 }
 
 base_query="verbose=true&token=${TOKEN}&domains=${DOMAINS}"
