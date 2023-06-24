@@ -37,13 +37,13 @@ function show_usage_help() {
     help_text 1>&2
 }
 
-TOKEN=
-DOMAINS=
+# TOKEN=
+# DOMAINS=
 
-# shellcheck source=/dev/null
-if [ -f "${HOME}/.duckdns.env" ]; then
-    source "${HOME}/.duckdns.env"
-fi
+# # shellcheck source=/dev/null
+# if [ -f "${HOME}/.duckdns.env" ]; then
+#     source "${HOME}/.duckdns.env"
+# fi
 
 do_clear=""
 ipv4_mode=""
